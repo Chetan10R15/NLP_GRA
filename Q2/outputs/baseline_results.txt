@@ -1,0 +1,22 @@
+Transition-Based Dependency Parser — Baseline Results
+
+Training sentences: 12544
+Development sentences evaluated: 100
+Skipped sentences: 0
+Total evaluated tokens: 2319
+
+Correct heads: 1771
+Correct labelled arcs: 1632
+
+UAS: 76.37%
+LAS: 70.38%
+
+Features:
+- S0, S1, S2
+- B0, B1, B2
+- FORM
+- LEMMA
+- UPOS
+- XPOS
+
+Gold DEPREL is NOT used as an input feature.

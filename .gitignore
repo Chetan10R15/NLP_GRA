@@ -1,0 +1,15 @@
+.venv/
+__pycache__/
+*.pyc
+.DS_Store
+
+# Trained machine-learning model files
+outputs/models/
+UD_English-EWT/not-to-release/
+UD_English-EWT/en_ewt-ud-test.conllu
+UD_English-EWT/.gitignore
+UD_English-EWT/CONTRIBUTING.md
+UD_English-EWT/LICENSE.txt
+UD_English-EWT/README.md
+UD_English-EWT/eval.log
+UD_English-EWT/stats.xml
