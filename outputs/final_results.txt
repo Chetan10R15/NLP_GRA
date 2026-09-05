@@ -1,0 +1,50 @@
+Transition-Based Dependency Parser — Final Results
+
+Dataset:
+- Training: Universal Dependencies English-EWT
+- Training sentences: 12,544
+- Development sentences: 2,001
+
+Development Evaluation:
+- Evaluated sentences: 2,001
+- Skipped sentences: 0
+- Total evaluated tokens: 25,148
+- Correct heads: 19,915
+- Correct labelled arcs: 18,439
+
+UAS: 79.19%
+LAS: 73.32%
+
+Features:
+- S0, S1, S2
+- B0, B1, B2
+- FORM
+- LEMMA
+- UPOS
+- XPOS
+- Gold DEPREL is NOT used as an input feature.
+
+Classifier:
+- Logistic Regression
+- scikit-learn
+- Trained on the full 12,544-sentence EWT training set
+- Saved using joblib
+
+Transition System:
+- SHIFT
+- LEFT-ARC(label)
+- RIGHT-ARC(label)
+
+Required Test Sentences:
+
+1. The cat sat on the mat.
+   - 7 predicted arcs
+   - ROOT = sat
+
+2. She eats a green salad.
+   - 6 predicted arcs
+   - ROOT = eats
+
+3. I saw the man with a telescope.
+   - 8 predicted arcs
+   - ROOT = saw
