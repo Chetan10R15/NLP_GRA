@@ -16,14 +16,7 @@ class Token:
 
 
 def parse_conllu(path: str) -> List[List[Token]]:
-    """
-    Read a CoNLL-U file and return a list of sentences.
-
-    Each sentence is represented as a list of Token objects.
-
-    Multi-word token lines (e.g. 1-2) and empty-node lines
-    (e.g. 3.1) are ignored.
-    """
+    """Read a CoNLL-U file and return its sentences."""
     sentences = []
     current_sentence = []
 
@@ -31,31 +24,23 @@ def parse_conllu(path: str) -> List[List[Token]]:
         for line in file:
             line = line.strip()
 
-            # Blank line = end of sentence
             if not line:
                 if current_sentence:
                     sentences.append(current_sentence)
                     current_sentence = []
                 continue
 
-            # Metadata/comment line
             if line.startswith("#"):
                 continue
 
             columns = line.split("\t")
 
-            # A valid CoNLL-U token line has 10 columns
             if len(columns) != 10:
                 continue
 
             token_id = columns[0]
 
-            # Ignore multi-word tokens such as 1-2
-            if "-" in token_id:
-                continue
-
-            # Ignore empty nodes such as 3.1
-            if "." in token_id:
+            if "-" in token_id or "." in token_id:
                 continue
 
             token = Token(
@@ -71,7 +56,6 @@ def parse_conllu(path: str) -> List[List[Token]]:
 
             current_sentence.append(token)
 
-    # Handle a file that does not end with a blank line
     if current_sentence:
         sentences.append(current_sentence)
 
@@ -79,11 +63,7 @@ def parse_conllu(path: str) -> List[List[Token]]:
 
 
 def add_root(sentence: List[Token]) -> List[Token]:
-    """
-    Add an artificial ROOT token at position 0.
-
-    The original token IDs remain unchanged.
-    """
+    """Add an artificial ROOT token at position 0."""
     root = Token(
         id=0,
         form="ROOT",
@@ -99,9 +79,7 @@ def add_root(sentence: List[Token]) -> List[Token]:
 
 
 if __name__ == "__main__":
-    # Small test using the English-EWT training data.
     path = "UD_English-EWT/en_ewt-ud-train.conllu"
-
     sentences = parse_conllu(path)
 
     print(f"Number of sentences: {len(sentences)}")
@@ -110,6 +88,7 @@ if __name__ == "__main__":
         sentence = add_root(sentences[0])
 
         print("\nFirst sentence:")
+
         for token in sentence:
             print(
                 f"{token.id:>2}  "

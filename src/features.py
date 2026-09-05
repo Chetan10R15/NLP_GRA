@@ -6,10 +6,7 @@ from conllu_parser import Token
 def build_token_map(
     sentence: List[Token],
 ) -> Dict[int, Token]:
-    """
-    Create a mapping from token ID to Token.
-    """
-
+    """Map token IDs to tokens."""
     return {
         token.id: token
         for token in sentence
@@ -20,20 +17,8 @@ def get_token_features(
     token_id: int,
     token_map: Dict[int, Token],
 ) -> Dict[str, str]:
-    """
-    Extract parser-safe features for one token.
-
-    These features are available during both training
-    and actual parsing.
-
-    We intentionally do NOT use the gold dependency
-    relation (DEPREL) as an input feature because it
-    would not be available when parsing an unseen
-    sentence.
-    """
-
+    """Get the parser features for one token."""
     if token_id == 0:
-
         return {
             "form": "ROOT",
             "lemma": "ROOT",
@@ -42,7 +27,6 @@ def get_token_features(
         }
 
     if token_id not in token_map:
-
         return {
             "form": "NULL",
             "lemma": "NULL",
@@ -65,133 +49,56 @@ def extract_features(
     buffer: List[int],
     sentence: List[Token],
 ) -> Dict[str, str]:
-    """
-    Extract features from the current parser configuration.
+    """Extract features from the top of the stack and buffer."""
 
-    Features include:
-
-        Stack:
-            S0, S1, S2
-
-        Buffer:
-            B0, B1, B2
-
-    For each position we use:
-
-        FORM
-        LEMMA
-        UPOS
-        XPOS
-
-    The gold dependency relation is deliberately
-    excluded from the feature set.
-    """
-
-    token_map = build_token_map(
-        sentence
-    )
-
+    token_map = build_token_map(sentence)
     features = {}
 
-    # ============================================================
-    # STACK FEATURES
-    # ============================================================
-
     stack_positions = {
-        "S0": (
-            stack[-1]
-            if len(stack) >= 1
-            else None
-        ),
-        "S1": (
-            stack[-2]
-            if len(stack) >= 2
-            else None
-        ),
-        "S2": (
-            stack[-3]
-            if len(stack) >= 3
-            else None
-        ),
+        "S0": stack[-1] if len(stack) >= 1 else None,
+        "S1": stack[-2] if len(stack) >= 2 else None,
+        "S2": stack[-3] if len(stack) >= 3 else None,
     }
 
-    for position, token_id in (
-        stack_positions.items()
-    ):
-
+    for position, token_id in stack_positions.items():
         if token_id is None:
-
             token_features = {
                 "form": "NULL",
                 "lemma": "NULL",
                 "upos": "NULL",
                 "xpos": "NULL",
             }
-
         else:
-
             token_features = get_token_features(
                 token_id,
                 token_map,
             )
 
-        for attribute, value in (
-            token_features.items()
-        ):
-
-            features[
-                f"{position}_{attribute}"
-            ] = value
-
-    # ============================================================
-    # BUFFER FEATURES
-    # ============================================================
+        for attribute, value in token_features.items():
+            features[f"{position}_{attribute}"] = value
 
     buffer_positions = {
-        "B0": (
-            buffer[0]
-            if len(buffer) >= 1
-            else None
-        ),
-        "B1": (
-            buffer[1]
-            if len(buffer) >= 2
-            else None
-        ),
-        "B2": (
-            buffer[2]
-            if len(buffer) >= 3
-            else None
-        ),
+        "B0": buffer[0] if len(buffer) >= 1 else None,
+        "B1": buffer[1] if len(buffer) >= 2 else None,
+        "B2": buffer[2] if len(buffer) >= 3 else None,
     }
 
-    for position, token_id in (
-        buffer_positions.items()
-    ):
-
+    for position, token_id in buffer_positions.items():
         if token_id is None:
-
             token_features = {
                 "form": "NULL",
                 "lemma": "NULL",
                 "upos": "NULL",
                 "xpos": "NULL",
             }
-
         else:
-
             token_features = get_token_features(
                 token_id,
                 token_map,
             )
 
-        for attribute, value in (
-            token_features.items()
-        ):
-
-            features[
-                f"{position}_{attribute}"
-            ] = value
+        for attribute, value in token_features.items():
+            features[f"{position}_{attribute}"] = value
 
     return features
 
@@ -201,9 +108,7 @@ def print_features(
     buffer: List[int],
     sentence: List[Token],
 ):
-    """
-    Print extracted features in a readable format.
-    """
+    """Print the extracted features."""
 
     features = extract_features(
         stack,
@@ -212,18 +117,12 @@ def print_features(
     )
 
     for name, value in features.items():
-
         print(
             f"{name:<20} = {value}"
         )
 
 
-# ================================================================
-# TEST
-# ================================================================
-
 if __name__ == "__main__":
-
     from conllu_parser import (
         add_root,
         parse_conllu,
@@ -234,12 +133,9 @@ if __name__ == "__main__":
         "en_ewt-ud-train.conllu"
     )
 
-    sentences = parse_conllu(
-        path
-    )
+    sentences = parse_conllu(path)
 
     if not sentences:
-
         raise ValueError(
             "No sentences found."
         )
@@ -263,7 +159,6 @@ if __name__ == "__main__":
     ]
 
     print("Sentence:")
-
     print(
         " ".join(
             token.form
@@ -272,19 +167,18 @@ if __name__ == "__main__":
     )
 
     print()
-    print("Parser configuration:")
 
+    print("Parser configuration:")
     print(
         f"Stack  = {stack}"
     )
-
     print(
         f"Buffer = {buffer}"
     )
 
     print()
-    print("Extracted features:")
 
+    print("Extracted features:")
     print_features(
         stack,
         buffer,

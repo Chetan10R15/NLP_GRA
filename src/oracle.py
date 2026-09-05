@@ -3,38 +3,10 @@ from typing import Dict, List, Tuple
 from conllu_parser import Token
 
 
-# ============================================================
-# TRANSITION REPRESENTATION
-# ============================================================
-#
-# SHIFT
-# LEFT-ARC(label)
-# RIGHT-ARC(label)
-#
-# Internally:
-# ("SHIFT", None)
-# ("LEFT-ARC", label)
-# ("RIGHT-ARC", label)
-# ============================================================
-
-
 def build_gold_dependencies(
     sentence: List[Token],
 ) -> Dict[int, Tuple[int, str]]:
-    """
-    Build a gold dependency mapping.
-
-    Returns:
-        dependent_id -> (head_id, dependency_label)
-
-    Example:
-        {
-            1: (0, "root"),
-            2: (3, "punct"),
-            3: (1, "flat")
-        }
-    """
-
+    """Build a mapping from dependent ID to its gold head and label."""
     gold = {}
 
     for token in sentence:
@@ -54,16 +26,8 @@ def has_unprocessed_dependents(
     buffer: List[int],
     gold: Dict[int, Tuple[int, str]],
 ) -> bool:
-    """
-    Check whether token_id still has a gold dependent
-    remaining in the buffer.
-
-    An arc should not be created until all required
-    dependents of the dependent have been processed.
-    """
-
+    """Check whether a token still has dependents in the buffer."""
     for dependent_id, (head_id, _) in gold.items():
-
         if head_id == token_id and dependent_id in buffer:
             return True
 
@@ -75,56 +39,17 @@ def oracle_transition(
     buffer: List[int],
     gold: Dict[int, Tuple[int, str]],
 ) -> Tuple[str, str | None]:
-    """
-    Determine the correct transition for the current
-    arc-standard parser configuration.
-
-    Possible transitions:
-
-        SHIFT
-        LEFT-ARC(label)
-        RIGHT-ARC(label)
-
-    Priority:
-
-        1. LEFT-ARC
-        2. RIGHT-ARC
-        3. SHIFT
-    """
-
-    # --------------------------------------------------------
-    # ARC TRANSITIONS REQUIRE AT LEAST TWO STACK ITEMS
-    # --------------------------------------------------------
+    """Choose the correct transition for the current configuration."""
 
     if len(stack) >= 2:
-
         second_top = stack[-2]
         top = stack[-1]
 
-        # ====================================================
-        # LEFT-ARC
-        # ====================================================
-        #
-        # second_top is dependent of top.
-        #
-        # Example:
-        #
-        # Stack = [ROOT, head, dependent]
-        #
-        # LEFT-ARC means:
-        #
-        # head -> dependent
-        #
-        # In arc-standard notation, the second-top item
-        # becomes the dependent and is removed.
-        # ====================================================
-
+        # Try LEFT-ARC first.
         if second_top != 0 and second_top in gold:
-
             head, label = gold[second_top]
 
             if head == top:
-
                 if not has_unprocessed_dependents(
                     second_top,
                     buffer,
@@ -135,29 +60,11 @@ def oracle_transition(
                         label,
                     )
 
-        # ====================================================
-        # RIGHT-ARC
-        # ====================================================
-        #
-        # top is dependent of second_top.
-        #
-        # Example:
-        #
-        # Stack = [ROOT, head, dependent]
-        #
-        # RIGHT-ARC means:
-        #
-        # head -> dependent
-        #
-        # The top item is removed.
-        # ====================================================
-
+        # Try RIGHT-ARC next.
         if top in gold:
-
             head, label = gold[top]
 
             if head == second_top:
-
                 if not has_unprocessed_dependents(
                     top,
                     buffer,
@@ -168,20 +75,11 @@ def oracle_transition(
                         label,
                     )
 
-    # ========================================================
-    # SHIFT
-    # ========================================================
-
     if buffer:
-
         return (
             "SHIFT",
             None,
         )
-
-    # ========================================================
-    # NO VALID TRANSITION
-    # ========================================================
 
     raise ValueError(
         "No valid oracle transition. "
@@ -195,35 +93,11 @@ def oracle_transition(
 def simulate_oracle(
     sentence: List[Token],
 ):
-    """
-    Simulate the complete gold transition sequence
-    for one sentence.
-
-    Initial configuration:
-
-        Stack  = [ROOT]
-        Buffer = [all words]
-
-    Returns:
-
-        [
-            (
-                stack_before_transition,
-                buffer_before_transition,
-                transition
-            ),
-            ...
-        ]
-    """
+    """Generate the gold transition sequence for one sentence."""
 
     gold = build_gold_dependencies(sentence)
 
-    # --------------------------------------------------------
-    # INITIAL CONFIGURATION
-    # --------------------------------------------------------
-
     stack = [0]
-
     buffer = [
         token.id
         for token in sentence
@@ -232,22 +106,14 @@ def simulate_oracle(
 
     transitions = []
 
-    # --------------------------------------------------------
-    # SIMULATE UNTIL ALL WORDS ARE ATTACHED TO ROOT
-    # --------------------------------------------------------
-
     while buffer or len(stack) > 1:
-
         try:
-
             transition = oracle_transition(
                 stack,
                 buffer,
                 gold,
             )
-
         except ValueError as exc:
-
             raise ValueError(
                 "Oracle failed for sentence. "
                 f"Stack={stack}, Buffer={buffer}. "
@@ -255,10 +121,7 @@ def simulate_oracle(
                 "arc-standard oracle."
             ) from exc
 
-        # ----------------------------------------------------
-        # Store the configuration BEFORE applying transition
-        # ----------------------------------------------------
-
+        # Save the configuration before applying the transition.
         transitions.append(
             (
                 stack.copy(),
@@ -269,12 +132,7 @@ def simulate_oracle(
 
         action, label = transition
 
-        # ====================================================
-        # SHIFT
-        # ====================================================
-
         if action == "SHIFT":
-
             if not buffer:
                 raise ValueError(
                     "SHIFT requested with empty buffer."
@@ -284,48 +142,30 @@ def simulate_oracle(
                 buffer.pop(0)
             )
 
-        # ====================================================
-        # LEFT-ARC
-        # ====================================================
-
         elif action == "LEFT-ARC":
-
             if len(stack) < 2:
                 raise ValueError(
                     "LEFT-ARC requires at least two "
                     "items on the stack."
                 )
 
-            # Remove second-top item.
             stack.pop(-2)
 
-        # ====================================================
-        # RIGHT-ARC
-        # ====================================================
-
         elif action == "RIGHT-ARC":
-
             if len(stack) < 2:
                 raise ValueError(
                     "RIGHT-ARC requires at least two "
                     "items on the stack."
                 )
 
-            # Remove top item.
             stack.pop()
 
         else:
-
             raise ValueError(
                 f"Unknown transition: {action}"
             )
 
-    # --------------------------------------------------------
-    # FINAL SANITY CHECK
-    # --------------------------------------------------------
-
     if stack != [0] or buffer:
-
         raise ValueError(
             "Oracle simulation did not terminate correctly. "
             f"Final Stack={stack}, Final Buffer={buffer}"
@@ -337,9 +177,7 @@ def simulate_oracle(
 def print_oracle_derivation(
     sentence: List[Token],
 ):
-    """
-    Print the complete oracle derivation in a readable format.
-    """
+    """Print the oracle derivation for a sentence."""
 
     transitions = simulate_oracle(sentence)
 
@@ -347,7 +185,6 @@ def print_oracle_derivation(
         f"Number of transitions: "
         f"{len(transitions)}"
     )
-
     print()
 
     for step, (
@@ -358,17 +195,13 @@ def print_oracle_derivation(
         transitions,
         start=1,
     ):
-
         action, label = transition
 
         if label is not None:
-
             transition_text = (
                 f"{action}({label})"
             )
-
         else:
-
             transition_text = action
 
         print(
@@ -379,12 +212,7 @@ def print_oracle_derivation(
         )
 
 
-# ============================================================
-# TEST THE ORACLE
-# ============================================================
-
 if __name__ == "__main__":
-
     from conllu_parser import (
         add_root,
         parse_conllu,
@@ -404,21 +232,15 @@ if __name__ == "__main__":
     )
 
     if not sentences:
-
         raise ValueError(
             "No sentences found in dataset."
         )
-
-    # --------------------------------------------------------
-    # Test the first sentence
-    # --------------------------------------------------------
 
     sentence = add_root(
         sentences[0]
     )
 
     print()
-
     print("Sentence:")
 
     print(
@@ -429,7 +251,6 @@ if __name__ == "__main__":
     )
 
     print()
-
     print("Oracle derivation:")
 
     print_oracle_derivation(
