@@ -1,0 +1,43 @@
+============================================================
+ENGLISH SAMPLE TEST STRINGS
+============================================================
+
+[Assignment English Benchmark]
+Input:         thequickbrownfoxjumpsoverthelazydog
+Segmented:     ['the', 'quick', 'brown', 'fox', 'jumps', 'over', 'the', 'lazy', 'dog']
+Standard POS:  [('the', 'AT'), ('quick', 'JJ'), ('brown', 'JJ'), ('fox', 'NN'), ('jumps', 'VBZ'), ('over', 'IN'), ('the', 'AT'), ('lazy', 'JJ'), ('dog', 'NN')]
+Morph-Aware:   [('the', 'DET-Art'), ('quick', 'ADJ-Pos'), ('brown', 'ADJ-Pos'), ('fox', 'NOUN-Sg'), ('jumps', 'VERB-3SgPres'), ('over', 'ADP'), ('the', 'DET-Art'), ('lazy', 'ADJ-Pos'), ('dog', 'NOUN-Sg')]
+
+[Additional English Sentence 1]
+Input:         naturallanguageprocessingisinteresting
+Segmented:     ['natural', 'language', 'processing', 'is', 'interesting']
+Standard POS:  [('natural', 'JJ'), ('language', 'NN'), ('processing', 'NN'), ('is', 'BEZ'), ('interesting', 'JJ')]
+Morph-Aware:   [('natural', 'ADJ-Pos'), ('language', 'NOUN-Sg'), ('processing', 'NOUN-Sg'), ('is', 'AUX-3SgPres'), ('interesting', 'ADJ-Pos')]
+
+[Additional English Sentence 2]
+Input:         machinelearningmodelsevaluatedata
+Segmented:     ['machine', 'learning', 'models', 'evaluate', 'data']
+Standard POS:  [('machine', 'NN'), ('learning', 'VBG'), ('models', 'NNS'), ('evaluate', 'VB'), ('data', 'NNS')]
+Morph-Aware:   [('machine', 'NOUN-Sg'), ('learning', 'VERB-PresPart'), ('models', 'NOUN-Pl'), ('evaluate', 'VERB-Base'), ('data', 'NOUN-Pl')]
+
+============================================================
+GERMAN SAMPLE TEST STRINGS
+============================================================
+
+[Assignment German Compound Benchmark]
+Input:         autobahnmeistereiverwaltungsgebaeude
+Segmented:     ['autobahn', 'meister', 'ei', 'verwaltungs', 'geb', 'ae', 'ude']
+Standard POS:  [('autobahn', 'PROPN'), ('meister', 'PROPN'), ('ei', 'ADP'), ('verwaltungs', 'NOUN'), ('geb', 'VERB'), ('ae', 'NOUN'), ('ude', 'PROPN')]
+Morph-Aware:   [('autobahn', 'PROPN-Fem-Sing'), ('meister', 'PROPN-Masc-Sing'), ('ei', 'ADP'), ('verwaltungs', 'NOUN'), ('geb', 'VERB'), ('ae', 'NOUN-Neut-Plur'), ('ude', 'PROPN-Masc-Sing')]
+
+[Additional German Sentence 1]
+Input:         deraltebaeckerbacktbrot
+Segmented:     ['der', 'alte', 'baeck', 'er', 'back', 't', 'brot']
+Standard POS:  [('der', 'DET'), ('alte', 'PROPN'), ('baeck', 'PROPN'), ('er', 'PRON'), ('back', 'PROPN'), ('t', 'PROPN'), ('brot', 'NOUN')]
+Morph-Aware:   [('der', 'DET-Masc-Sing'), ('alte', 'NOUN-Masc-Sing'), ('baeck', 'PROPN-Masc-Sing'), ('er', 'PRON-Masc-Sing'), ('back', 'NOUN'), ('t', 'PROPN-Sing'), ('brot', 'NOUN-Neut-Sing')]
+
+[Additional German Sentence 2 (Agreement: Fem Pl)]
+Input:         dieneuenschuhesindschwarz
+Segmented:     ['die', 'neuen', 'schuhe', 'sind', 'schwarz']
+Standard POS:  [('die', 'DET'), ('neuen', 'ADJ'), ('schuhe', 'NOUN'), ('sind', 'AUX'), ('schwarz', 'ADJ')]
+Morph-Aware:   [('die', 'DET-Plur'), ('neuen', 'ADJ-Masc-Plur'), ('schuhe', 'NOUN-Masc-Plur'), ('sind', 'AUX-Plur'), ('schwarz', 'NOUN-Neut-Sing')]
