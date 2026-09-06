@@ -1,0 +1,10 @@
+Metric,English (Brown),German (UD-GSD)
+Segmentation Accuracy (Trigram+DP),96.55%,87.58%
+Segmentation Accuracy (Greedy Baseline),77.55%,74.27%
+Segmentation Improvement (Delta),+19.00%,+13.31%
+POS Tagging Accuracy (Trigram HMM),91.37%,82.75%
+POS Tagging Accuracy (Morphology-Aware HMM),93.77%,75.59%
+POS Tagging Accuracy (MFT Baseline),69.58%,68.48%
+POS Tagging Improvement (Delta),+21.80%,+14.27%
+Segmentation-Caused Errors (%),40.0%,72.0%
+Genuine POS Tagging Errors (%),60.0%,28.0%

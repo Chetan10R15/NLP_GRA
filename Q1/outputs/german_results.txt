@@ -1,0 +1,15 @@
+=== GERMAN EVALUATION RESULTS ===
+
+Test Samples: 250
+Trigram+DP Segmentation Accuracy: 0.8758
+Baseline Segmentation Accuracy:   0.7427
+Segmentation Gain over Baseline:  +0.1331
+
+HMM POS Tagging Accuracy:         0.8275
+Morph-Aware Tagging Accuracy:     0.7559
+Baseline MFT Tagging Accuracy:    0.6848
+Tagging Gain over Baseline:       +0.1427
+
+Error-Source Breakdown:
+- Segmentation-caused errors:     517 (72.01%)
+- Genuine tagging errors:         201 (27.99%)
