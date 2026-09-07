@@ -1,4 +1,6 @@
 """
+
+Please run this instead of running every question one by one :D
 Question 3: Building, Benchmarking and Deploying an Efficient Spelling Corrector
 
 A robust spelling corrector that can handle both non-word
@@ -12,7 +14,7 @@ and real-word errors within an edit distance of 1.
 - Part 5 : Spelling Corrector CLI application
 
 Importing part4 cascades the imports of setup, part1, part2 and part3 in order,
-running the whole pipeline top-to-bottom exactly like the original notebook.
+running the whole pipeline top-to-bottom.
 """
 
 import part4_evaluation_benchmark
