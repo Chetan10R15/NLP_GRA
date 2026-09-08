@@ -1,3 +1,5 @@
 nltk
 streamlit
 pandas
+numpy
+scipy
