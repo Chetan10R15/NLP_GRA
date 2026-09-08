@@ -3,8 +3,26 @@ import streamlit as st
 from q4_runtime import Q4Runtime
 from q4_pipeline import tokenize_text, GRAMMAR_TRIGGER_N
 from q4_analysis import analyze_passage
+import nltk
 
 BASE = os.path.dirname(os.path.abspath(__file__))
+
+def setup_nltk():
+    resources = [
+        ("corpora/brown", "brown"),
+        ("corpora/treebank", "treebank"),
+        ("corpora/gutenberg", "gutenberg"),
+        ("tokenizers/punkt", "punkt"),
+        ("tokenizers/punkt_tab", "punkt_tab")
+    ]
+
+    for path, package in resources:
+        try:
+            nltk.data.find(path)
+        except LookupError:
+            nltk.download(package, quiet=True)
+
+setup_nltk()
 
 @st.cache_resource
 def get_runtime():
